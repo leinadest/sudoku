@@ -19,6 +19,7 @@ let userActionHistory = {
 }
 
 let selectedCell;
+let timerInterval;
 
 function createCell() {
     const cell = document.createElement('div');
@@ -192,10 +193,21 @@ function checkBoardIsComplete() {
             }
         }
     }
+    clearInterval(timerInterval);
     if (wrongMoves == 0) {
-        window.alert(`You have won!\nNumber of correct moves: ${correctMoves}\nNumber of wrong moves: ${wrongMoves}`);
+        window.alert(`
+            You have won!
+            Number of correct moves: ${correctMoves}
+            Number of wrong moves: ${wrongMoves}
+            Time: ${document.querySelector('.timer').textContent}
+        `);
     } else {
-        window.alert(`You have lost!\nNumber of correct moves: ${correctMoves}\nNumber of wrong moves: ${wrongMoves}`);
+        window.alert(`
+            You have lost!
+            Number of correct moves: ${correctMoves}
+            Number of wrong moves: ${wrongMoves}
+            Time: ${document.querySelector('.timer').textContent}
+        `);
     }
 }
 
@@ -213,10 +225,32 @@ function inputUserMove(move, cell) {
     checkBoardIsComplete();
 }
 
+function updateTimer() {
+    let timer = document.querySelector('.timer');
+    let time = timer.textContent.split(':').map(t => parseInt(t));
+    time[2]++;
+    if (time[2] > 59) {
+        time[1]++;
+        time[2] = 0;
+    }
+    if (time[1] > 59) {
+        time[0]++;
+        time[1] = 0;
+    }
+    timer.textContent = `${time[0]}:${time[1].toString().padStart(2, '0')}:${time[2].toString().padStart(2, '0')}`;
+}
+
+function startRound(difficulty) {
+    generateBoard(difficulty);
+    document.querySelector('.timer').textContent = '0:00:00';
+    clearInterval(timerInterval);
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
 createCleanBoard();
-document.querySelector('.easy').addEventListener('click', e => generateBoard('easy'));
-document.querySelector('.medium').addEventListener('click', e => generateBoard('medium'));
-document.querySelector('.hard').addEventListener('click', e => generateBoard('hard'));
+document.querySelector('.easy').addEventListener('click', e => startRound('easy'));
+document.querySelector('.medium').addEventListener('click', e => startRound('medium'));
+document.querySelector('.hard').addEventListener('click', e => startRound('hard'));
 
 for (let i = 0; i < 9; i++) {
     const numberBtn = document.querySelector('.numbers').children[i];
