@@ -11,7 +11,21 @@
     <h1>Sudoku</h1>
     <div class="container">
         <aside>
-    
+            <h2>Instructions</h2>
+            <p>
+                Your goal is to fill in every missing cell number. To fill in a cell, you click one to select
+                and then click one of the numbered buttons below the board to input the desired number. If 
+                your choice was wrong, the cell number will be colored red. If your choice was correct, the
+                cell number will be colored green. If all inputed numbers are green, you win; if one is red,
+                you lose.
+            </p>
+            <h2>Controls</h2>
+            <ul>
+                <li>Undo: takes back your previous move</li>
+                <li>Redo: takes back your undone move</li>
+                <li>Solve: immediately solves the entire board</li>
+                <li>Numeric keypress (1 to 9): inputs the number pressed into the selected cell</li>
+            </ul>
         </aside>
         <main>
             <div class="container">
@@ -49,7 +63,12 @@
             </div>
         </main>
         <aside>
-    
+            <h2>Sudoku Rules</h2>
+            <ol>
+                <li>Each row must contain numbers from 1 to 9 with no repetitions</li>
+                <li>Each column must contain all numbers from 1 to 9 with no repetitions</li>
+                <li>Each 3x3 subgrid must contain all numbers from 1 to 9 with no repetitions</li>
+            </ol>
         </aside>
     </div>
 </body>

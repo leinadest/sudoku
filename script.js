@@ -125,7 +125,6 @@ function generateArrayBoard(difficulty) {
 
 function generateBoard(difficulty) {
     const board = document.querySelector('.board');
-    createCleanBoard();
     generateArrayBoard(difficulty);
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
@@ -156,7 +155,7 @@ function generateBoard(difficulty) {
                     cellDOM = board.children[8].children[cellDOMIndex];
                 }
             }
-            cellDOM.classList.add(cells[row][col]);
+            cellDOM.setAttribute('data-cell-value', cells[row][col].toString());
             if (
                 difficulty == 'easy' && Math.random() > 0.5 || 
                 difficulty == 'medium' && Math.random() > 0.6 ||
@@ -212,11 +211,11 @@ function checkBoardIsComplete() {
 }
 
 function inputUserMove(move, cell) {
-    if (cell.textContent != '') {
+    if (cell.textContent != '' || cells[0][0] == 0) {
         return;
     }
     cell.textContent = move;
-    if (cell.textContent == cell.classList.item(1)) {
+    if (cell.textContent == cell.getAttribute('data-cell-value')) {
         cell.style.color = 'green';
     } else {
         cell.style.color = 'red';
@@ -241,10 +240,13 @@ function updateTimer() {
 }
 
 function startRound(difficulty) {
+    createCleanBoard();
     generateBoard(difficulty);
     document.querySelector('.timer').textContent = '0:00:00';
     clearInterval(timerInterval);
     timerInterval = setInterval(updateTimer, 1000);
+    userActionHistory.history = [{cell: undefined, move: undefined}];
+    userActionHistory.present = 0;
 }
 
 createCleanBoard();
@@ -286,7 +288,11 @@ document.querySelector('.solve').addEventListener('click', e => {
     for (let subgridIndex = 0; subgridIndex < 9; subgridIndex++) {
         for (let cellIndex = 0; cellIndex < 9; cellIndex++) {
             const cell = document.querySelector('.board').children[subgridIndex].children[cellIndex];
-            cell.textContent = cell.classList.item(1);
+            cell.attribute
+            if (cell.textContent == cell.getAttribute('data-cell-value')) { 
+                continue;
+            }
+            cell.textContent = cell.getAttribute('data-cell-value');
             cell.style.color = 'green';
             updateHistory(cell);
         }
