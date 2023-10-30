@@ -10,9 +10,26 @@ let cells = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
 
+let userActionHistory = {
+    history : [{
+        cell : undefined,
+        move : undefined
+    }],
+    present : 0
+}
+
+let selectedCell;
+
 function createCell() {
     const cell = document.createElement('div');
     cell.classList.add('cell');
+    cell.addEventListener('click', e => {
+        if (selectedCell != undefined) {
+            selectedCell.style.backgroundColor = 'white';
+        }
+        cell.style.backgroundColor = 'lightblue';
+        selectedCell = cell;
+    });
     return cell;
 }
 
@@ -66,19 +83,19 @@ function checkSubgrid(row, col) {
     return true;
 }
 
-function setBoard() {
+function createCleanBoard() {
     const board = document.querySelector('.board');
     for (let i = 0; i < 9; i++) {
         board.children[i].replaceChildren();
         for (let j = 0; j < 9; j++) {
             board.children[i].appendChild(createCell());
+            cells[i][j] = 0;
         }
     }
 }
 
 function generateArrayBoard(difficulty) {
-    const board = document.querySelector('.board');
-    let generationIsValid;
+    let generationIsValid = true;
     do {
         generationIsValid = true;
         generation: for (let row = 0; row < 9; row++) {
@@ -107,7 +124,7 @@ function generateArrayBoard(difficulty) {
 
 function generateBoard(difficulty) {
     const board = document.querySelector('.board');
-    setBoard();
+    createCleanBoard();
     generateArrayBoard(difficulty);
     for (let row = 0; row < 9; row++) {
         for (let col = 0; col < 9; col++) {
@@ -150,7 +167,94 @@ function generateBoard(difficulty) {
     }
 }
 
-setBoard();
+function updateHistory(newCell) {
+    while (userActionHistory.present < userActionHistory.history.length - 1) {
+        userActionHistory.history.pop();
+    }
+    userActionHistory.history.push({cell: newCell, move: newCell.textContent});
+    userActionHistory.present++;
+}
+
+function checkBoardIsComplete() {
+    let correctMoves = 0;
+    let wrongMoves = 0;
+    for (let subgridIndex = 0; subgridIndex < 9; subgridIndex++) {
+        for (let cellIndex = 0; cellIndex < 9; cellIndex++) {
+            const cell = document.querySelector('.board').children[subgridIndex].children[cellIndex];
+            if (cell.textContent == '') {
+                return;
+            }
+            if (cell.style.color == 'red') {
+                wrongMoves++;
+            }
+            if (cell.style.color == 'green') {
+                correctMoves++;
+            }
+        }
+    }
+    if (wrongMoves == 0) {
+        window.alert(`You have won!\nNumber of correct moves: ${correctMoves}\nNumber of wrong moves: ${wrongMoves}`);
+    } else {
+        window.alert(`You have lost!\nNumber of correct moves: ${correctMoves}\nNumber of wrong moves: ${wrongMoves}`);
+    }
+}
+
+function inputUserMove(move, cell) {
+    if (cell.textContent != '') {
+        return;
+    }
+    cell.textContent = move;
+    if (cell.textContent == cell.classList.item(1)) {
+        cell.style.color = 'green';
+    } else {
+        cell.style.color = 'red';
+    }
+    updateHistory(cell);
+    checkBoardIsComplete();
+}
+
+createCleanBoard();
 document.querySelector('.easy').addEventListener('click', e => generateBoard('easy'));
 document.querySelector('.medium').addEventListener('click', e => generateBoard('medium'));
 document.querySelector('.hard').addEventListener('click', e => generateBoard('hard'));
+
+for (let i = 0; i < 9; i++) {
+    const numberBtn = document.querySelector('.numbers').children[i];
+    numberBtn.addEventListener('click', e => inputUserMove(e.target.textContent, selectedCell));
+}
+
+document.querySelector('.undo').addEventListener('click', e => {
+    if (userActionHistory.present == 0) {
+        return;
+    }
+    let previousCell = userActionHistory.history[userActionHistory.present].cell;
+    previousCell.textContent = '';
+    userActionHistory.present--;
+});
+
+document.querySelector('.redo').addEventListener('click', e => {
+    if (userActionHistory.present == userActionHistory.history.length - 1) {
+        return;
+    }
+    let nextHistory = userActionHistory.history[userActionHistory.present + 1];
+    nextHistory.cell.textContent = nextHistory.move;
+    userActionHistory.present++;
+});
+
+document.addEventListener('keydown', e => {
+    const numberPressed = e.key.match(/[1-9]/);
+    if (numberPressed != null) {
+        inputUserMove(numberPressed, selectedCell);
+    }
+});
+
+document.querySelector('.solve').addEventListener('click', e => {
+    for (let subgridIndex = 0; subgridIndex < 9; subgridIndex++) {
+        for (let cellIndex = 0; cellIndex < 9; cellIndex++) {
+            const cell = document.querySelector('.board').children[subgridIndex].children[cellIndex];
+            cell.textContent = cell.classList.item(1);
+            cell.style.color = 'green';
+            updateHistory(cell);
+        }
+    }
+})
