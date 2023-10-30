@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sudoku</title>
     <link href="style.css" rel="stylesheet">
+    <script src="script.js" defer></script>
 </head>
 <body>
     <h1>Sudoku</h1>
@@ -14,12 +15,22 @@
         </aside>
         <main>
             <div class="container">
-                <button>Easy</button>
-                <button>Medium</button>
-                <button>Hard</button>
+                <button class="easy">Easy</button>
+                <button class="medium">Medium</button>
+                <button class="hard">Hard</button>
                 <div class="timer">Timer</div>
             </div>
-            <div class="board"></div>
+            <div class="board">
+                <div class="subgrid"></div>
+                <div class="subgrid"></div>
+                <div class="subgrid"></div>
+                <div class="subgrid"></div>
+                <div class="subgrid"></div>
+                <div class="subgrid"></div>
+                <div class="subgrid"></div>
+                <div class="subgrid"></div>
+                <div class="subgrid"></div>
+            </div>
             <div class="container">
                 <button>1</button>
                 <button>2</button>
